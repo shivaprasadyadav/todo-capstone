@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My To-Do App</title>
+<style>
+body{font-family:Arial;text-align:center;background:#f4f4f4}
+.box{background:white;width:350px;margin:50px auto;padding:20px;border-radius:10px}
+input{padding:10px;width:200px} button{padding:10px;background:green;color:white;border:none}
+li{list-style:none;margin:10px 0;text-align:left}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>✅ My To-Do App</h2>
+<input id="task" placeholder="Add new task">
+<button onclick="addTodo()">Add</button>
+<ul id="list"></ul>
+<p>Cloud & DevOps Capstone | Navya Vaskula</p>
+</div>
+<script>
+async function load(){
+  let res = await fetch('/api/todos');
+  let data = await res.json();
+  document.getElementById('list').innerHTML = data.map(t =>
+    `<li>${t.text} <button onclick="del(${t.id})">❌</button></li>`
+  ).join('');
+}
+async function addTodo(){
+  let text = document.getElementById('task').value;
+  if(!text) return;
+  await fetch('/api/todos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+  document.getElementById('task').value='';
+  load();
+}
+async function del(id){
+  await fetch('/api/todos/'+id,{method:'DELETE'});
+  load();
+}
+load();
+</script>
+</body>
+</html>
